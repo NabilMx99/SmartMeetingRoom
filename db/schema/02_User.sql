@@ -8,10 +8,10 @@ CREATE TABLE [User](
     PhoneNumber VARCHAR(25) UNIQUE NOT NULL,
     Email VARCHAR(255) UNIQUE NOT NULL,
     PasswordHash VARCHAR(255) NOT NULL,
-    UserStatus BIT NOT NULL DEFAULT 0, -- 1 = Online and 0 = Offline
+    IsOnline BIT NOT NULL DEFAULT 0,
     PRIMARY KEY(UserId),
     FOREIGN KEY(FK_RoleId) REFERENCES [Role](RoleId),
     CONSTRAINT CHK_PhoneNumberFormat CHECK (PhoneNumber LIKE '+%' OR PhoneNumber LIKE '[0-9]%'),
     CONSTRAINT CHK_EmailFormat CHECK (Email LIKE '%_@_%._%'),
-    CONSTRAINT CHK_UserStatus CHECK (UserStatus IN (0, 1))
+    CONSTRAINT CHK_UserStatus CHECK (IsOnline IN (0, 1))
 );
