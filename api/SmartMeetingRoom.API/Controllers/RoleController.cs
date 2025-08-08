@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartMeetingRoom.API.Data;
+using SmartMeetingRoom.API.DTOs;
 using SmartMeetingRoom.API.Models;
 
 namespace SmartMeetingRoom.API.Controllers
@@ -10,22 +12,26 @@ namespace SmartMeetingRoom.API.Controllers
     public class RoleController : ControllerBase
     {
         private readonly SmartMeetingRoomDBContext _context;
+        private readonly IMapper _mapper;
 
-        public RoleController(SmartMeetingRoomDBContext context)
+        public RoleController(SmartMeetingRoomDBContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/roles
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Role>>> GetRoles()
+        public async Task<ActionResult<IEnumerable<RoleDto>>> GetRoles()
         {
-            return await _context.Roles.ToListAsync();
+            var roles = await _context.Roles.ToListAsync();
+            var roleDtos = _mapper.Map<List<RoleDto>>(roles);
+            return Ok(roleDtos);
         }
 
         // GET: api/roles/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Role>> GetRole(byte id)
+        public async Task<ActionResult<RoleDto>> GetRole(byte id)
         {
             var role = await _context.Roles.FindAsync(id);
 
@@ -34,19 +40,22 @@ namespace SmartMeetingRoom.API.Controllers
                 return NotFound();
             }
 
-            return role;
+            var roleDto = _mapper.Map<RoleDto>(role);
+            return Ok(roleDto);
         }
 
         // PUT: api/roles/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRole(byte id, Role role)
+        public async Task<IActionResult> PutRole(byte id, RoleUpdateDto updatedRoleDto)
         {
-            if (id != role.RoleId)
+            var existingRole = await _context.Roles.FindAsync(id);
+
+            if (existingRole == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(role).State = EntityState.Modified;
+            _mapper.Map(updatedRoleDto, existingRole);
 
             try
             {
@@ -69,12 +78,15 @@ namespace SmartMeetingRoom.API.Controllers
 
         // POST: api/roles
         [HttpPost]
-        public async Task<ActionResult<Role>> PostRole(Role role)
+        public async Task<ActionResult<RoleDto>> PostRole(RoleCreateDto createdRoleDto)
         {
+            var role = _mapper.Map<Role>(createdRoleDto);
+
             _context.Roles.Add(role);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRole", new { id = role.RoleId }, role);
+            var roleDto = _mapper.Map<RoleDto>(role);
+            return CreatedAtAction(nameof(GetRole), new { id = role.RoleId }, roleDto);
         }
 
         // DELETE: api/roles/{id}
