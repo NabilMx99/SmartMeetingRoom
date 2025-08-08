@@ -15,7 +15,7 @@ namespace SmartMeetingRoom.API
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<SmartMeetingRoomDBContext>(options =>
                options.UseSqlServer(builder.Configuration.GetConnectionString("SmartMeetingRoomDB")));
-
+            builder.Services.AddAutoMapper(typeof(Program));
 
             var app = builder.Build();
 
