@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SmartMeetingRoom.API.DTOs;
+namespace SmartMeetingRoom.API.DTOs.Role;
 
 public class RoleCreateDto
 {

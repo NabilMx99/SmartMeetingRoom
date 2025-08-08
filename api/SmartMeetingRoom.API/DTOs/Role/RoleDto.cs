@@ -1,4 +1,4 @@
-namespace SmartMeetingRoom.API.DTOs;
+namespace SmartMeetingRoom.API.DTOs.Role;
 
 public class RoleDto
 {
