@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartMeetingRoom.API.Data;
-using SmartMeetingRoom.API.DTOs;
+using SmartMeetingRoom.API.DTOs.Role;
 using SmartMeetingRoom.API.Models;
 
 namespace SmartMeetingRoom.API.Controllers

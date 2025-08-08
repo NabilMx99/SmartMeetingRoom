@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using SmartMeetingRoom.API.Models;
-using SmartMeetingRoom.API.DTOs;
+using SmartMeetingRoom.API.DTOs.Role;
 
 namespace SmartMeetingRoom.API.Profiles;
 
