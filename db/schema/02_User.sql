@@ -2,7 +2,7 @@ USE SmartMeetingRoomDB;
 
 CREATE TABLE [User](
     UserId INT IDENTITY(1, 1) NOT NULL,
-    FK_RoleId TINYINT NOT NULL,
+    FK_RoleId INT NOT NULL,
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
     PhoneNumber VARCHAR(25) UNIQUE NOT NULL,
