@@ -1,7 +1,7 @@
 USE SmartMeetingRoomDB;
 
 CREATE TABLE [Role](
-    RoleId TINYINT IDENTITY(1, 1) NOT NULL,
+    RoleId INT IDENTITY(1, 1) NOT NULL,
     RoleName VARCHAR(20) UNIQUE NOT NULL,
     RoleDescription VARCHAR(255) NULL DEFAULT 'No description provided',
     PRIMARY KEY(RoleId),
