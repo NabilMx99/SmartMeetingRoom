@@ -164,13 +164,10 @@ public partial class SmartMeetingRoomDBContext : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE1A20381A9B");
-
             entity.ToTable("Role");
 
             entity.HasIndex(e => e.RoleName, "UQ__Role__8A2B61607947FE60").IsUnique();
 
-            entity.Property(e => e.RoleId).ValueGeneratedOnAdd();
             entity.Property(e => e.RoleDescription)
                 .HasMaxLength(255)
                 .IsUnicode(false)
@@ -247,7 +244,7 @@ public partial class SmartMeetingRoomDBContext : DbContext
             entity.HasOne(d => d.FkRole).WithMany(p => p.Users)
                 .HasForeignKey(d => d.FkRoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__User__FK_RoleId__5165187F");
+                .HasConstraintName("FK_User_Role");
         });
 
         OnModelCreatingPartial(modelBuilder);

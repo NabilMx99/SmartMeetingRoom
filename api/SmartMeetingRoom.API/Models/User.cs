@@ -7,7 +7,7 @@ public partial class User
 {
     public int UserId { get; set; }
 
-    public byte FkRoleId { get; set; }
+    public int FkRoleId { get; set; }
 
     public string FirstName { get; set; } = null!;
 
