@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore; 
+
 using SmartMeetingRoom.API.Data;
 using SmartMeetingRoom.API.DTOs.Role;
 using SmartMeetingRoom.API.Models;
@@ -9,6 +11,7 @@ namespace SmartMeetingRoom.API.Controllers
 {
     [Route("api/roles")]
     [ApiController]
+    [Authorize(Policy = "Admin")]
     public class RoleController : ControllerBase
     {
         private readonly SmartMeetingRoomDBContext _context;
@@ -25,31 +28,45 @@ namespace SmartMeetingRoom.API.Controllers
         public async Task<ActionResult<IEnumerable<RoleDto>>> GetRoles()
         {
             var roles = await _context.Roles.ToListAsync();
-            var roleDtos = _mapper.Map<List<RoleDto>>(roles);
+
+            var roleDtos = roles.Select(r => new RoleDto
+            {
+                RoleId = r.Id,
+                RoleName = r.Name!,
+                RoleDescription = string.IsNullOrEmpty(r.RoleDescription) ? "No description provided." : r.RoleDescription
+            }).ToList();
+
             return Ok(roleDtos);
         }
 
         // GET: api/roles/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<RoleDto>> GetRole(byte id)
+        public async Task<ActionResult<RoleDto>> GetRole(int id)
         {
             var role = await _context.Roles.FindAsync(id);
-
             if (role == null)
             {
                 return NotFound();
             }
 
-            var roleDto = _mapper.Map<RoleDto>(role);
+            var roleDto = new RoleDto
+            {
+                RoleId = role.Id,
+                RoleName = role.Name!,
+                RoleDescription = string.IsNullOrEmpty(role.RoleDescription) ? "No description provided." : role.RoleDescription
+            };
+
             return Ok(roleDto);
         }
 
         // PUT: api/roles/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRole(byte id, RoleUpdateDto updatedRoleDto)
+        public async Task<IActionResult> PutRole(int id, [FromBody] RoleUpdateDto updatedRoleDto)
         {
-            var existingRole = await _context.Roles.FindAsync(id);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
+            var existingRole = await _context.Roles.FindAsync(id);
             if (existingRole == null)
             {
                 return NotFound();
@@ -67,10 +84,7 @@ namespace SmartMeetingRoom.API.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
@@ -78,20 +92,29 @@ namespace SmartMeetingRoom.API.Controllers
 
         // POST: api/roles
         [HttpPost]
-        public async Task<ActionResult<RoleDto>> PostRole(RoleCreateDto createdRoleDto)
+        public async Task<ActionResult<RoleDto>> PostRole([FromBody] RoleCreateDto createdRoleDto)
         {
-            var role = _mapper.Map<Role>(createdRoleDto);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var role = _mapper.Map<ApplicationRole>(createdRoleDto);
 
             _context.Roles.Add(role);
             await _context.SaveChangesAsync();
 
-            var roleDto = _mapper.Map<RoleDto>(role);
-            return CreatedAtAction(nameof(GetRole), new { id = role.RoleId }, roleDto);
+            var roleDto = new RoleDto
+            {
+                RoleId = role.Id,
+                RoleName = role.Name!,
+                RoleDescription = string.IsNullOrEmpty(role.RoleDescription) ? "No description provided." : role.RoleDescription
+            };
+
+            return CreatedAtAction(nameof(GetRole), new { id = role.Id }, roleDto);
         }
 
         // DELETE: api/roles/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRole(byte id)
+        public async Task<IActionResult> DeleteRole(int id)
         {
             var role = await _context.Roles.FindAsync(id);
             if (role == null)
@@ -105,9 +128,9 @@ namespace SmartMeetingRoom.API.Controllers
             return NoContent();
         }
 
-        private bool RoleExists(byte id)
+        private bool RoleExists(int id)
         {
-            return _context.Roles.Any(e => e.RoleId == id);
+            return _context.Roles.Any(e => e.Id == id);
         }
     }
 }
