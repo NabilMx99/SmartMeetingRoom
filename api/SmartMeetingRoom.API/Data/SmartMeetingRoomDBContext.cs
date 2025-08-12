@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
 using SmartMeetingRoom.API.Models;
 
 namespace SmartMeetingRoom.API.Data;
 
-public partial class SmartMeetingRoomDBContext : DbContext
+public partial class SmartMeetingRoomDBContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
 {
     public SmartMeetingRoomDBContext()
     {
@@ -26,19 +28,19 @@ public partial class SmartMeetingRoomDBContext : DbContext
 
     public virtual DbSet<MeetingMinute> MeetingMinutes { get; set; }
 
-    public virtual DbSet<Role> Roles { get; set; }
-
     public virtual DbSet<Room> Rooms { get; set; }
 
     public virtual DbSet<RoomFeature> RoomFeatures { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=SmartMeetingRoomDB");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<ActionItem>(entity =>
         {
             entity.HasKey(e => e.ActionItemId).HasName("PK__ActionIt__56285AB24BCFCCD3");
@@ -162,19 +164,33 @@ public partial class SmartMeetingRoomDBContext : DbContext
                 .HasConstraintName("FK__MeetingMi__FK_Us__797309D9");
         });
 
-        modelBuilder.Entity<Role>(entity =>
+        modelBuilder.Entity<ApplicationRole>(entity =>
         {
             entity.ToTable("Role");
 
-            entity.HasIndex(e => e.RoleName, "UQ__Role__8A2B61607947FE60").IsUnique();
+            entity.HasKey(r => r.Id);
 
-            entity.Property(e => e.RoleDescription)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasDefaultValue("No description provided");
-            entity.Property(e => e.RoleName)
-                .HasMaxLength(20)
-                .IsUnicode(false);
+            entity.Property(r => r.Id).ValueGeneratedOnAdd();
+
+            entity.Property(r => r.Name)
+                  .HasColumnName("RoleName")
+                  .HasMaxLength(20)
+                  .IsUnicode(false);
+
+            entity.Property(r => r.NormalizedName)
+                  .HasMaxLength(20)
+                  .IsUnicode(false);
+
+            entity.HasIndex(r => r.NormalizedName).IsUnique();
+
+            entity.Property(r => r.RoleDescription)
+                  .HasMaxLength(255)
+                  .IsUnicode(false)
+                  .HasDefaultValue("No description provided.");
+
+            entity.Property(r => r.ConcurrencyStamp)
+                  .IsConcurrencyToken()
+                  .IsUnicode(false);
         });
 
         modelBuilder.Entity<Room>(entity =>
@@ -214,37 +230,68 @@ public partial class SmartMeetingRoomDBContext : DbContext
                 .HasConstraintName("FK__RoomFeatu__FK_Ro__66603565");
         });
 
-        modelBuilder.Entity<User>(entity =>
+        modelBuilder.Entity<ApplicationUser>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4C75F23F88");
-
             entity.ToTable("User");
 
-            entity.HasIndex(e => e.PhoneNumber, "UQ__User__85FB4E38DD54C733").IsUnique();
+            entity.HasKey(u => u.Id);
 
-            entity.HasIndex(e => e.Email, "UQ__User__A9D105346F70340B").IsUnique();
+            entity.Property(u => u.Id).ValueGeneratedOnAdd();
 
-            entity.Property(e => e.Email)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.FirstName)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.FkRoleId).HasColumnName("FK_RoleId");
-            entity.Property(e => e.LastName)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.PasswordHash)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.PhoneNumber)
-                .HasMaxLength(25)
-                .IsUnicode(false);
+            entity.Property(u => u.UserName)
+                  .HasMaxLength(256)
+                  .IsUnicode(false);
 
-            entity.HasOne(d => d.FkRole).WithMany(p => p.Users)
-                .HasForeignKey(d => d.FkRoleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_User_Role");
+            entity.Property(u => u.NormalizedUserName)
+                  .HasMaxLength(256)
+                  .IsUnicode(false);
+
+            entity.Property(u => u.Email)
+                  .HasMaxLength(255)
+                  .IsUnicode(false);
+
+            entity.Property(u => u.NormalizedEmail)
+                  .HasMaxLength(255)
+                  .IsUnicode(false);
+
+            entity.Property(u => u.PasswordHash)
+                  .IsUnicode(false);
+
+            entity.Property(u => u.SecurityStamp)
+                  .IsUnicode(false);
+
+            entity.Property(u => u.ConcurrencyStamp)
+                  .IsConcurrencyToken()
+                  .IsUnicode(false);
+
+            entity.Property(u => u.FirstName)
+                  .HasMaxLength(50)
+                  .IsUnicode(false)
+                  .IsRequired();
+
+            entity.Property(u => u.LastName)
+                  .HasMaxLength(50)
+                  .IsUnicode(false)
+                  .IsRequired();
+
+            entity.Property(u => u.IsOnline)
+                  .HasDefaultValue(false);
+
+            entity.Property(u => u.PhoneNumber)
+                  .HasMaxLength(25)
+                  .IsUnicode(false);
+
+            entity.Property(u => u.FkRoleId)
+                  .HasColumnName("FK_RoleId");
+
+            entity.HasOne(u => u.FkRole)
+                  .WithMany(r => r.Users)
+                  .HasForeignKey(u => u.FkRoleId)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_User_Role");
+
+            entity.HasIndex(u => u.NormalizedUserName).IsUnique();
+            entity.HasIndex(u => u.NormalizedEmail);
         });
 
         OnModelCreatingPartial(modelBuilder);
