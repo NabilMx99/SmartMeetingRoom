@@ -25,7 +25,7 @@ public partial class Meeting
 
     public virtual Room FkRoom { get; set; } = null!;
 
-    public virtual User FkUser { get; set; } = null!;
+    public virtual ApplicationUser FkUser { get; set; } = null!;
 
     public virtual ICollection<MeetingMinute> MeetingMinutes { get; set; } = new List<MeetingMinute>();
 }
