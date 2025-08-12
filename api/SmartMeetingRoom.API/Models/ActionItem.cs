@@ -19,5 +19,5 @@ public partial class ActionItem
 
     public virtual MeetingMinute FkMeetingMinutes { get; set; } = null!;
 
-    public virtual User FkUser { get; set; } = null!;
+    public virtual ApplicationUser FkUser { get; set; } = null!;
 }
