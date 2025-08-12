@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+
 using SmartMeetingRoom.API.Models;
 using SmartMeetingRoom.API.DTOs.Role;
 
@@ -8,16 +9,18 @@ public class RoleProfile : Profile
 {
     public RoleProfile()
     {
-        CreateMap<Role, RoleDto>()
+        CreateMap<ApplicationRole, RoleDto>()
+            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.RoleDescription, opt =>
-             opt.MapFrom(src => string.IsNullOrEmpty(src.RoleDescription) ? "No description provided." : src.RoleDescription));
+                       opt.MapFrom(src => string.IsNullOrEmpty(src.RoleDescription) ? "No description provided." : src.RoleDescription));
 
-        CreateMap<RoleCreateDto, Role>()
+        CreateMap<RoleCreateDto, ApplicationRole>()
             .ForMember(dest => dest.RoleDescription, opt =>
-            opt.MapFrom(src => string.IsNullOrEmpty(src.RoleDescription) ? "No description provided." : src.RoleDescription));
+                opt.MapFrom(src => string.IsNullOrEmpty(src.RoleDescription) ? "No description provided." : src.RoleDescription));
 
-        CreateMap<RoleUpdateDto, Role>()
+        CreateMap<RoleUpdateDto, ApplicationRole>()
             .ForMember(dest => dest.RoleDescription, opt =>
-            opt.MapFrom(src => string.IsNullOrEmpty(src.RoleDescription) ? "No description provided." : src.RoleDescription));
+                opt.MapFrom(src => string.IsNullOrEmpty(src.RoleDescription) ? "No description provided." : src.RoleDescription));
     }
 }
