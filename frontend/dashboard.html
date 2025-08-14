@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Meeting Room | Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg" href="favicon.svg">
+    </head>
+<body>
+    <!-- Header -->
+    <div class="header-bar">
+        <h1>Dashboard</h1>
+        <div class="user-actions">
+            <!-- User Profile Logo -->
+            <img src="images/icons/user-profile.jpg" style="cursor:pointer;" onclick="window.location.href='profile.html'">
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="grid-2">
+            <div>
+                <!-- Upcoming Meetings -->
+                <div class="section upcoming-meetings">
+                    <h2 class="section-title">Upcoming Meetings</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Title</th>
+                                <th>Room</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>10:00 AM</td>
+                                <td>Team Sync</td>
+                                <td>Room A</td>
+                            </tr>
+                            <tr>
+                                <td>2:00 PM</td>
+                                <td>Project Review</td>
+                                <td>Room B</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="section quick-actions">
+                    <h2 class="section-title">Quick Actions</h2>
+                    <a href="booking.html" class="btn-primary">Schedule Meeting</a>
+                    <button class="join">Join Now</button>
+                    <button class="minutes">View Minutes</button>
+                </div>
+
+                <!-- Room Availability -->
+                <div class="section room-availability">
+                    Calendar / Room Availability Placeholder
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="section notifications">
+                <h2 class="section-title">Notifications</h2>
+                <ul>
+                    <li>Meeting "Team Sync" starts in 30 minutes.</li>
+                    <li>You have 2 pending minutes to review.</li>
+                    <li>Room B is booked tomorrow at 2 PM.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            alert('Logged out successfully');
+            window.location.href = 'login.html'; // Redirect to login page
+        }
+    </script>
+</body>
+</html>

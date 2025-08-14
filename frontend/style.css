@@ -1,0 +1,404 @@
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+/* Form Card */
+.form-card {
+    width: 400px;
+    max-width: 90%;
+    margin: 50px auto;
+    padding: 50px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #ccc;
+}
+
+/* Headings */
+.form-card h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-card p.subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 20px;
+}
+
+/* Inputs */
+.form-card input,
+.form-card select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Buttons */
+.form-card button {
+    width: 100%;
+    padding: 10px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-card button:hover {
+    background: #0056b3;
+}
+
+/* Links */
+.form-card a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.form-card a:hover {
+    text-decoration: underline;
+}
+
+/* Utility */
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+    font-size: 0.9em;
+}
+
+/* Responsive for forms */
+@media (max-width: 500px) {
+    .form-card {
+        padding: 30px 20px;
+    }
+}
+
+/* Dashboard Styles */
+.dashboard-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+}
+
+/* Header Bar */
+.header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #007bff;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.header-bar h1 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+/* Profile & logout container */
+.user-actions {
+    display: flex;
+    align-items: center;
+}
+
+.user-actions img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 2px solid #fff;
+}
+
+.user-actions button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    background: #fff;
+    color: #007bff;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.user-actions button:hover {
+    background: #e6e6e6;
+}
+
+/* Section styling */
+.section {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.section h2.section-title {
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    color: #007bff;
+}
+
+.section h2.section-title::before {
+    content: '•';
+    font-size: 1.5em;
+    margin-right: 8px;
+    color: #007bff;
+}
+
+/* Quick actions buttons */
+.quick-actions button {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.quick-actions button.schedule {
+    background: #007bff;
+}
+
+.quick-actions button.schedule:hover {
+    background: #0056b3;
+}
+
+.quick-actions button.join {
+    background: #28a745;
+}
+
+.quick-actions button.join:hover {
+    background: #218838;
+}
+
+.quick-actions button.minutes {
+    background: #fd7e14;
+}
+
+.quick-actions button.minutes:hover {
+    background: #e8590c;
+}
+
+/* Upcoming meetings table */
+.upcoming-meetings table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.upcoming-meetings th,
+.upcoming-meetings td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.upcoming-meetings tbody tr:hover {
+    background: #f1f7ff;
+}
+
+/* Notifications */
+.notifications ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.notifications li {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-left: 4px solid #007bff;
+    background: #f9f9f9;
+    border-radius: 5px;
+}
+
+/* Room availability placeholder */
+.room-availability {
+    height: 220px;
+    background: #f0f4f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-style: italic;
+    border: 2px dashed #c0c0c0;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+/* Responsive grid for dashboard */
+@media (min-width: 800px) {
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 799px) {
+    .grid-2 {
+        display: block;
+    }
+}
+
+/* Profile Page */
+.container {
+    width: 400px;
+    margin: 50px auto;
+    padding: 40px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.container h2 {
+    text-align: center;
+    color: #000000;
+    margin-bottom: 20px;
+}
+
+.container input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.container button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.container .update {
+    background: #28a745;
+    color: #fff;
+}
+
+.container .update:hover {
+    background: #218838;
+}
+
+.container .delete {
+    background: #dc3545;
+    color: #fff;
+}
+
+.container .delete:hover {
+    background: #b52b3a;
+}
+
+.container .back {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.container .back:hover {
+    text-decoration: underline;
+}
+
+/* Availability Preview */
+.availability-preview {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+
+.availability-preview p {
+    margin-bottom: 8px;
+}
+
+.availability-color {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    margin-right: 8px;
+    color: white;
+}
+
+.availability-color.green {
+    background-color: #28a745;
+}
+
+.availability-color.red {
+    background-color: #dc3545;
+}
+
+/* Form Buttons */
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.form-buttons .cancel {
+    background-color: #6c757d;
+    border: none;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.form-buttons .cancel:hover {
+    background-color: #5a6268;
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* Form Checkboxes */
+.form-check {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    align-items: center;
+    column-gap: 10px;
+    margin: 12px 0 15px;
+}
+
+.form-check input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    vertical-align: middle;
+    accent-color: #007bff;
+}
+
+.form-check label {
+    margin: 0;
+    line-height: 1.3;
+}

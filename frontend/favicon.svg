@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Smart Meeting Room logo">
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect x="12" y="12" width="232" height="232" rx="40" fill="#0F172A" stroke="url(#g1)" stroke-width="8"/>
+  <!-- Table -->
+  <rect x="48" y="100" width="160" height="44" rx="10" fill="url(#g1)" opacity="0.9"/>
+  <!-- People -->
+  <circle cx="90" cy="82" r="14" fill="#93C5FD"/>
+  <circle cx="128" cy="72" r="14" fill="#67E8F9"/>
+  <circle cx="166" cy="82" r="14" fill="#93C5FD"/>
+  <!-- Chairs -->
+  <rect x="64" y="152" width="24" height="36" rx="6" fill="#1F2937"/>
+  <rect x="116" y="152" width="24" height="36" rx="6" fill="#1F2937"/>
+  <rect x="168" y="152" width="24" height="36" rx="6" fill="#1F2937"/>
+  <!-- Text -->
+  <text x="128" y="220" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" fill="#E5E7EB">SMR</text>
+</svg>
