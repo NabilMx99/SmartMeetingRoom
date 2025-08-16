@@ -26,6 +26,9 @@
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
 
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+
             <div class="text-right">
                 <a href="forgot-password.html">Forgot Password?</a>
             </div>
@@ -36,12 +39,7 @@
             <p>Already have an account? <a href="login.html">Login</a></p>
         </div>
     </div>
-
-    <script>
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Registration form submitted!');
-        });
-    </script>
+    <script src="js/api.js"></script>
+    <script src="js/register.js"></script>
 </body>
 </html>
