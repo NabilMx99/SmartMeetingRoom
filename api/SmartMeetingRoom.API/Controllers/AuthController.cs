@@ -116,20 +116,30 @@ namespace SmartMeetingRoom.API.Controllers
             if (!passwordValid)
                 return Unauthorized("Invalid email or password.");
 
+            var loggedInUser = await _context.Users
+                .Include(u => u.FkRole)
+                .Include(u => u.RefreshTokens)
+                .FirstOrDefaultAsync(u => u.Id == user.Id);
+
+            if (loggedInUser == null)
+                return Unauthorized("Invalid email or password.");
+
             var roles = await _userManager.GetRolesAsync(user);
 
             var token = GenerateJwtToken(user, roles);
 
-            var userDto = _mapper.Map<UserDto>(user);
+            var userDto = _mapper.Map<UserDto>(loggedInUser);
             userDto.Role = new DTOs.Role.RoleDto
             {
-                RoleName = roles.Count > 0 ? roles[0] : "User"
+                RoleId = loggedInUser.FkRole.Id,
+                RoleName = loggedInUser.FkRole.Name!,
+                RoleDescription = loggedInUser.FkRole.RoleDescription ?? "No description provided."
             };
 
             var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
             var refreshToken = GenerateRefreshToken(ipAddress);
-            await _context.Entry(user).Collection(u => u.RefreshTokens).LoadAsync();
-            user.RefreshTokens.Add(refreshToken);
+
+            loggedInUser.RefreshTokens.Add(refreshToken);
             await _context.SaveChangesAsync();
 
             return Ok(new
