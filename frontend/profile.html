@@ -1,23 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Smart Meeting Room | Profile</title>
-    <link rel="icon" type="image/svg" href="favicon.svg">
-    <link rel="stylesheet" href="style.css">
-    </head>
+  <meta charset="UTF-8">
+  <title>Smart Meeting Room | Profile</title>
+  <link rel="icon" type="image/svg" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
-    <div class="container">
-        <h2>Your Profile</h2>
-        <form>
-            <input type="text" placeholder="First Name" required>
-            <input type="text" placeholder="Last Name" required>
-            <input type="email" placeholder="Email" required>
-            <input type="tel" placeholder="Phone Number">
-            <button type="submit" class="update">Update Profile</button>
-        </form>
-        <button class="delete">Delete Account</button>
-        <a class="back" href="dashboard.html">Back to Dashboard</a>
-    </div>
+  <div class="container">
+    <h2>Your Profile</h2>
+    <form id="profileForm">
+      <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+      <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
+      <input type="email" id="email" name="email" placeholder="Email" readonly>
+      <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Phone Number">
+      <button type="submit" class="update">Update Profile</button>
+    </form>
+
+    <button id="deleteAccountBtn" class="delete">Delete Account</button>
+    <a class="back" href="dashboard.html">Back to Dashboard</a>
+
+    <div id="profileMessage" class="subtitle"></div>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/profile.js"></script>
 </body>
 </html>
+
