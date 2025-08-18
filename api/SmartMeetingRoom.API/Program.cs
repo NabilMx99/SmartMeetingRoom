@@ -7,6 +7,7 @@ using System.Text;
 
 using SmartMeetingRoom.API.Data;
 using SmartMeetingRoom.API.Models;
+using SmartMeetingRoom.API.Services;
 
 namespace SmartMeetingRoom.API
 {
@@ -66,6 +67,9 @@ namespace SmartMeetingRoom.API
                 options.AddPolicy("Employee", policy => policy.RequireRole("Employee"));
                 options.AddPolicy("Guest", policy => policy.RequireRole("Guest"));
             });
+
+            // Add Email service
+            builder.Services.AddTransient<IEmailService, EmailService>();
 
             // Add AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
