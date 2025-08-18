@@ -11,6 +11,7 @@ using SmartMeetingRoom.API.Data;
 using SmartMeetingRoom.API.DTOs.User;
 using SmartMeetingRoom.API.DTOs.User.Auth;
 using SmartMeetingRoom.API.Models;
+using SmartMeetingRoom.API.Services;
 
 namespace SmartMeetingRoom.API.Controllers
 {
@@ -21,6 +22,7 @@ namespace SmartMeetingRoom.API.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly SmartMeetingRoomDBContext _context;
+        private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
@@ -28,12 +30,14 @@ namespace SmartMeetingRoom.API.Controllers
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
             SmartMeetingRoomDBContext context,
+            IEmailService emailService,
             IMapper mapper,
             IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
+            _emailService = emailService;
             _mapper = mapper;
             _configuration = configuration;
         }
@@ -148,6 +152,73 @@ namespace SmartMeetingRoom.API.Controllers
                 RefreshToken = refreshToken.Token,
                 User = userDto
             });
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
+            if (user == null)
+                return Ok(new { Message = "If that email is registered, a reset link has been sent." });
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var tokenBytes = Encoding.UTF8.GetBytes(token);
+            var encodedToken = Convert.ToBase64String(tokenBytes);
+
+            var resetUrl = $"{Request.Scheme}://{Request.Host}/reset-password.html?email={user.Email}&token={encodedToken}";
+
+            var subject = "Reset your Smart Meeting Room account password";
+            var message = $@"<p>Hi {user.FirstName},</p>
+                             <p>You requested to reset your password. Click the link below to reset it:</p>
+                             <p><a href='{resetUrl}'>Reset Password</a></p>
+                             <p>If you didn't request this, ignore this email.</p>";
+            try
+            {
+                await _emailService.SendEmailAsync(user.Email!, subject, message);
+            }
+            catch(Exception ex)
+            { 
+                Console.WriteLine(ex.Message);
+            }
+
+            return Ok(new { Message = "If that email is registered, a reset link has been sent." });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
+            if (user == null)
+                return BadRequest("Invalid email or token.");
+
+            try
+            {
+                var tokenBytes = Convert.FromBase64String(resetPasswordDto.Token);
+                var decodedToken = Encoding.UTF8.GetString(tokenBytes);
+
+                var result = await _userManager.ResetPasswordAsync(user, decodedToken, resetPasswordDto.NewPassword);
+
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                        ModelState.AddModelError(error.Code, error.Description);
+
+                    return BadRequest(ModelState);
+                }
+            }
+            catch
+            {
+                return BadRequest("Invalid token format.");
+            }
+
+            return Ok(new { Message = "Password has been reset successfully." });
         }
 
         [HttpPost("refresh")]
