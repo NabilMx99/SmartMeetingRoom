@@ -3,80 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <title>Smart Meeting Room | Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/svg" href="favicon.svg">
-    </head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="icon" type="image/svg" href="images/icons/favicon.svg">
+</head>
 <body>
     <!-- Header -->
     <div class="header-bar">
         <h1>Dashboard</h1>
         <div class="user-actions">
             <!-- User Profile Logo -->
-            <img src="images/icons/user-profile.jpg" style="cursor:pointer;" onclick="window.location.href='profile.html'">
+            <span id="welcomeName" class="welcome-text"></span>
+            <img src="images/icons/user-profile.jpg" alt="User Profile" style="cursor:pointer;">
             <button onclick="logout()">Logout</button>
         </div>
     </div>
-
+    <!-- Summary Widgets -->
     <div class="dashboard-container">
+        <div class="summary-widgets grid-3">
+            <div class="widget">
+                <h3>Today's Meetings<i class="fas fa-users"></i></h3>
+                <p class="widget-number">0</p>
+            </div>
+            <div class="widget">
+                <h3>Available Rooms<i class="fas fa-door-open"></i></h3>
+                <p class="widget-number">0</p>
+            </div>
+        </div>
         <div class="grid-2">
             <div>
                 <!-- Upcoming Meetings -->
                 <div class="section upcoming-meetings">
-                    <h2 class="section-title">Upcoming Meetings</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Title</th>
-                                <th>Room</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>10:00 AM</td>
-                                <td>Team Sync</td>
-                                <td>Room A</td>
-                            </tr>
-                            <tr>
-                                <td>2:00 PM</td>
-                                <td>Project Review</td>
-                                <td>Room B</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <h2 class="section-title"><i class="fas fa-calendar-alt"></i>Upcoming Meetings</h2>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Status</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="next-meeting">
+                                    <td>2025-08-20 10:00 AM</td>
+                                    <td>2025-08-20 11:00 AM</td>
+                                    <td><span class="badge green">Ongoing</span></td>
+                                    <td><button class="view-details-btn" onclick="toggleDetails(this)">View
+                                            Details</button></td>
+                                </tr>
+                                <tr class="meeting-details">
+                                    <td colspan="4">
+                                        <strong>Organizer:</strong> John Doe<br>
+                                        <strong>Start Time:</strong> 2025-08-20 10:00 AM<br>
+                                        <strong>End Time:</strong> 2025-08-20 11:00 AM<br>
+                                        <strong>Title:</strong> Team Sync<br>
+                                        <strong>Agenda:</strong> Discuss project milestones<br>
+                                        <strong>Room:</strong> Room A<br>
+                                        <strong>Location:</strong> Building 1 - Floor 3<br>
+                                        <strong>Status:</strong> Ongoing
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2025-08-20 2:00 PM</td>
+                                    <td>2025-08-20 3:00 PM</td>
+                                    <td><span class="badge blue">Scheduled</span></td>
+                                    <td><button class="view-details-btn" onclick="toggleDetails(this)">View
+                                            Details</button></td>
+                                </tr>
+                                <tr class="meeting-details">
+                                    <td colspan="4">
+                                        <strong>Organizer:</strong> Jane Smith<br>
+                                        <strong>Start Time:</strong> 2025-08-20 2:00 PM<br>
+                                        <strong>End Time:</strong> 2025-08-20 3:00 PM<br>
+                                        <strong>Title:</strong> Project Review<br>
+                                        <strong>Agenda:</strong> Review deliverables and deadlines<br>
+                                        <strong>Room:</strong> Room B<br>
+                                        <strong>Location:</strong> Building 2 - Floor 1<br>
+                                        <strong>Status:</strong> Scheduled
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
                 <!-- Quick Actions -->
                 <div class="section quick-actions">
-                    <h2 class="section-title">Quick Actions</h2>
-                    <a href="booking.html" class="btn-primary">Schedule Meeting</a>
-                    <button class="join">Join Now</button>
-                    <button class="minutes">View Minutes</button>
+                    <h2 class="section-title"><i class="fas fa-bolt"></i>Quick Actions</h2>
+                    <button class="schedule"><i class="fas fa-calendar-plus"></i>Schedule Meeting</button>
+                    <button class="join"><i class="fas fa-video"></i>Join Now</button>
+                    <button class="minutes"><i class="fas fa-file-alt"></i>View Minutes</button>
                 </div>
-
                 <!-- Room Availability -->
                 <div class="section room-availability">
-                    Calendar / Room Availability Placeholder
+                    <h2 class="section-title"><i class="fas fa-door-open"></i>Room Availability</h2>
+                    <div class="search-bar">
+                        <input type="text" id="roomSearch"
+                            placeholder="Search rooms by name, location, capacity or status...">
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="roomTable">
+                            <thead>
+                                <tr>
+                                    <th>Room</th>
+                                    <th>Location</th>
+                                    <th>Capacity</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Room A</td>
+                                    <td>Building 1 - Floor 3</td>
+                                    <td>10</td>
+                                    <td><span class="badge green">Available</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Room B</td>
+                                    <td>Building 2 - Floor 1</td>
+                                    <td>8</td>
+                                    <td><span class="badge red">Occupied</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Room C</td>
+                                    <td>Building 1 - Floor 2</td>
+                                    <td>12</td>
+                                    <td><span class="badge green">Available</span></td>
+                                </tr>
+                                    <tr>
+                                    <td>Room D</td>
+                                    <td>Building 2 - Floor 1</td>
+                                    <td>20</td>
+                                    <td><span class="badge red">Occupied</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-
             <!-- Notifications -->
             <div class="section notifications">
-                <h2 class="section-title">Notifications</h2>
+                <h2 class="section-title"><i class="fas fa-bell"></i>Notifications</h2>
                 <ul>
-                    <li>Meeting "Team Sync" starts in 30 minutes.</li>
-                    <li>You have 2 pending minutes to review.</li>
-                    <li>Room B is booked tomorrow at 2 PM.</li>
+                    <li>No notifications</li>
                 </ul>
             </div>
         </div>
     </div>
-
-    <script>
-        function logout() {
-            alert('Logged out successfully');
-            window.location.href = 'login.html'; // Redirect to login page
-        }
-    </script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
