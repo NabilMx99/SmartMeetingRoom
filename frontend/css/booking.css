@@ -1,0 +1,134 @@
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+/* Form Card */
+.form-card {
+    width: 400px;
+    max-width: 90%;
+    margin: 50px auto;
+    padding: 50px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #ccc;
+}
+
+/* Headings */
+.form-card h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-card p.subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 20px;
+}
+
+/* Inputs */
+.form-card input,
+.form-card select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Buttons */
+.form-card button {
+    width: 100%;
+    padding: 10px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-card button:hover {
+    background: #0056b3;
+}
+
+/* Form Checkboxes */
+.form-check {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    align-items: center;
+    column-gap: 10px;
+    margin: 12px 0 15px;
+}
+
+.form-check input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    vertical-align: middle;
+    accent-color: #007bff;
+}
+
+.form-check label {
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* Availability Preview */
+.availability-preview {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+
+.availability-preview p {
+    margin-bottom: 8px;
+}
+
+.availability-color {
+    display: inline-block;
+    padding: 4px 10px;
+    margin-right: 6px;
+    border-radius: 50%;
+    font-size: 0.9em;
+    color: white;
+}
+
+.availability-color.green {
+    background-color: #28a745;
+}
+
+.availability-color.red {
+    background-color: #dc3545;
+}
+
+/* Form Buttons */
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.form-buttons .cancel {
+    background-color: #6c757d;
+    border: none;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.form-buttons .cancel:hover {
+    background-color: #5a6268;
+}
+
+/* Responsive for forms */
+@media (max-width: 500px) {
+    .form-card {
+        padding: 30px 20px;
+    }
+}
