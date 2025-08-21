@@ -79,9 +79,9 @@ namespace SmartMeetingRoom.API
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll", policy =>
+                options.AddPolicy("AllowLocalhost", policy =>
                 {
-                    policy.AllowAnyOrigin()
+                    policy.WithOrigins("https://127.0.0.1:5500")
                           .AllowAnyMethod()
                           .AllowAnyHeader();
                 });
@@ -117,7 +117,7 @@ namespace SmartMeetingRoom.API
 
             var app = builder.Build();
 
-            app.UseCors("AllowAll");
+            app.UseCors("AllowLocalhost");
 
             if (app.Environment.IsDevelopment())
             {
