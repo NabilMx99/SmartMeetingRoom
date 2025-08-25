@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 using SmartMeetingRoom.API.Data;
+using SmartMeetingRoom.API.DTOs.Feature;
 using SmartMeetingRoom.API.Models;
 
 namespace SmartMeetingRoom.API.Controllers
@@ -10,43 +14,48 @@ namespace SmartMeetingRoom.API.Controllers
     public class FeatureController : ControllerBase
     {
         private readonly SmartMeetingRoomDBContext _context;
+        private readonly IMapper _mapper;
 
-        public FeatureController(SmartMeetingRoomDBContext context)
+        public FeatureController(SmartMeetingRoomDBContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/features
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Feature>>> GetFeatures()
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<FeatureDto>>> GetFeatures()
         {
-            return await _context.Features.ToListAsync();
+            var features = await _context.Features.ToListAsync();
+            return Ok(_mapper.Map<IEnumerable<FeatureDto>>(features));
         }
 
         // GET: api/features/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Feature>> GetFeature(byte id)
+        [Authorize]
+        public async Task<ActionResult<FeatureDto>> GetFeature(byte id)
         {
             var feature = await _context.Features.FindAsync(id);
 
             if (feature == null)
-            {
                 return NotFound();
-            }
 
-            return feature;
+            return Ok(_mapper.Map<FeatureDto>(feature));
         }
 
         // PUT: api/features/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFeature(byte id, Feature feature)
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> PutFeature(byte id, [FromBody] FeatureUpdateDto featureUpdateDto)
         {
-            if (id != feature.FeatureId)
-            {
-                return BadRequest();
-            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            _context.Entry(feature).State = EntityState.Modified;
+            var feature = await _context.Features.FindAsync(id);
+            if (feature == null) return NotFound();
+
+            _mapper.Map(featureUpdateDto, feature);
 
             try
             {
@@ -55,13 +64,9 @@ namespace SmartMeetingRoom.API.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!FeatureExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
@@ -69,16 +74,24 @@ namespace SmartMeetingRoom.API.Controllers
 
         // POST: api/features
         [HttpPost]
-        public async Task<ActionResult<Feature>> PostFeature(Feature feature)
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<FeatureDto>> PostFeature([FromBody] FeatureCreateDto featureCreateDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var feature = _mapper.Map<Feature>(featureCreateDto);
+
             _context.Features.Add(feature);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetFeature", new { id = feature.FeatureId }, feature);
+            var featureDto = _mapper.Map<FeatureDto>(feature);
+            return CreatedAtAction(nameof(GetFeature), new { id = feature.FeatureId }, featureDto);
         }
 
         // DELETE: api/features/{id}
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> DeleteFeature(byte id)
         {
             var feature = await _context.Features.FindAsync(id);
