@@ -99,8 +99,15 @@
                 <div class="section room-availability">
                     <h2 class="section-title"><i class="fas fa-door-open"></i>Room Availability</h2>
                     <div class="search-bar">
+                        <div class="search-prefixes">
+                            <button type="button" data-prefix="room: ">Room</button>
+                            <button type="button" data-prefix="location: ">Location</button>
+                            <button type="button" data-prefix="capacity: ">Capacity</button>
+                            <button type="button" data-prefix="status: ">Status</button>
+                            <button type="button" data-prefix="features: ">Features</button>
+                        </div>
                         <input type="text" id="roomSearch"
-                            placeholder="Search rooms by name, location, capacity or status...">
+                            placeholder="Search rooms by name, location, capacity, status or features...">
                     </div>
                     <div class="table-wrapper">
                         <table id="roomTable">
@@ -110,6 +117,7 @@
                                     <th>Location</th>
                                     <th>Capacity</th>
                                     <th>Status</th>
+                                    <th>Feature(s)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -118,24 +126,38 @@
                                     <td>Building 1 - Floor 3</td>
                                     <td>10</td>
                                     <td><span class="badge green">Available</span></td>
+                                    <td>
+                                        <span class="badge grey">Projector</span>
+                                        <span class="badge grey">Whiteboard</span>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Room B</td>
                                     <td>Building 2 - Floor 1</td>
                                     <td>8</td>
                                     <td><span class="badge red">Occupied</span></td>
+                                    <td><span class="badge grey">Whiteboard</span></td>
                                 </tr>
                                 <tr>
                                     <td>Room C</td>
                                     <td>Building 1 - Floor 2</td>
                                     <td>12</td>
                                     <td><span class="badge green">Available</span></td>
+                                    <td>
+                                        <span class="badge grey">Video Conferencing</span>
+                                        <span class="badge grey">Projector</span>
+                                    </td>
                                 </tr>
-                                    <tr>
+                                <tr>
                                     <td>Room D</td>
                                     <td>Building 2 - Floor 1</td>
                                     <td>20</td>
                                     <td><span class="badge red">Occupied</span></td>
+                                    <td>
+                                        <span class="badge grey">Projector</span>
+                                        <span class="badge grey">Whiteboard</span>
+                                        <span class="badge grey">Video Conferencing</span>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
