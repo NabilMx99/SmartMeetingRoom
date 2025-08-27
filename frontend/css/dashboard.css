@@ -95,7 +95,6 @@ body {
 .section-title i {
     margin-right: 8px;
     font-size: 1.2em;
-    vertical-align: middle;
 }
 
 .section h2.section-title::before {
@@ -157,23 +156,20 @@ body {
     border-collapse: separate;
     border-spacing: 0;
     border-radius: 8px;
-    overflow: hidden;
     table-layout: auto;
     width: 100%;
 }
 
 .upcoming-meetings .table-wrapper {
     overflow-x: auto;
-    max-height: 300px;
     overflow-y: auto;
+    max-height: 300px;
 }
 
 .upcoming-meetings th,
 .upcoming-meetings td {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    word-break: normal;
+    white-space: normal;
+    word-break: break-word;
     padding: 10px 12px;
     vertical-align: middle;
     text-align: left;
@@ -286,6 +282,10 @@ body {
     background-color: #dc3545;
 }
 
+.badge.grey {
+    background-color: #9e9e9e;     
+}
+
 /* Quick Actions Icons */
 .quick-actions button i {
     margin-right: 6px;
@@ -357,26 +357,24 @@ body {
 }
 
 .room-availability .table-wrapper {
-    overflow-x: auto;
     max-height: 300px;
+    overflow-x: auto;
     overflow-y: auto;
+    display: block;
 }
 
 .room-availability table {
     border-collapse: separate;
     border-spacing: 0;
     border-radius: 8px;
-    overflow: hidden;
-    table-layout: auto;
-    width: 100%;
+    width: max-content;       
+    min-width: 100%;          
 }
 
 .room-availability th,
 .room-availability td {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    word-break: normal;
+    white-space: normal;
+    word-break: break-word;
     padding: 10px 12px;
     vertical-align: middle;
     text-align: left;
@@ -386,6 +384,11 @@ body {
     background: #f1f7ff;
 }
 
+.grid-2 > div:first-child {
+    min-width: 0;               
+}
+
+/* Search Bar */
 .search-bar {
     margin-bottom: 15px;
 }
@@ -411,4 +414,25 @@ body {
 .search-bar input:focus {
     border-color: #007bff;
     box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+}
+
+.search-prefixes {
+    margin-bottom: 8px;
+    display: flex;
+    gap: 8px;
+}
+
+.search-prefixes button {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-prefixes button:hover {
+    background: #1e3a8a;
 }
