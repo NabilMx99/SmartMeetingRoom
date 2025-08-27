@@ -42,24 +42,65 @@ function filterRooms() {
     if (!tbody) return;
 
     const rows = Array.from(table.querySelectorAll("tbody tr"));
-    const availableRows = [];
-    const occupiedRows = [];
+
+    const regex = /(\w+):\s*([^:]+)(?=\s+\w+:|$)/g;
+    const terms = [];
+    let match;
+    while ((match = regex.exec(input)) !== null) {
+        terms.push({ key: match[1].trim(), value: match[2].trim() });
+    }
+
+    const noPrefixWords = input.replace(regex, '').split(/[\s,]+/).filter(Boolean);
 
     rows.forEach(row => {
         const cells = row.querySelectorAll("td");
-        if (cells.length < 4) return;
+        if (cells.length < 5) {
+            row.style.display = '';
+            return;
+        }
 
-        const rowText = Array.from(cells).slice(0, 4).map(cell => cell.textContent.toLowerCase()).join(' ');
-        const matchesSearch = !input || rowText.includes(input);
+        const room = cells[0].textContent.toLowerCase();
+        const location = cells[1].textContent.toLowerCase();
+        const capacity = cells[2].textContent.toLowerCase();
+        const status = cells[3].textContent.toLowerCase();
+        const features = Array.from(cells[4].querySelectorAll('.badge')).map(b => b.textContent.toLowerCase()).join(' ');
 
-        if (cells[3].textContent.toLowerCase() === 'available') availableRows.push({ row, show: matchesSearch });
-        else occupiedRows.push({ row, show: matchesSearch });
-    });
+        let matches = true;
+        for (const term of terms) {
+            switch (term.key) {
+                case 'room':
+                    if (!room.includes(term.value)) matches = false;
+                    break;
+                case 'location':
+                    if (!location.includes(term.value)) matches = false;
+                    break;
+                case 'capacity':
+                    if (!capacity.includes(term.value)) matches = false;
+                    break;
+                case 'status':
+                    if (!status.includes(term.value)) matches = false;
+                    break;
+                case 'features':
+                case 'feature':
+                    
+                    const featureTerms = term.value.split(/[\s,]+/).filter(Boolean);
+                    if (!featureTerms.every(f => features.includes(f))) matches = false;
+                    break;
+                default:
+                    
+                    break;
+            }
+            if (!matches) break;
+        }
 
-    tbody.innerHTML = '';
-    [...availableRows, ...occupiedRows].forEach(({ row, show }) => {
-        row.style.display = show ? '' : 'none';
-        tbody.appendChild(row);
+        if (matches && noPrefixWords.length > 0) {
+            const searchable = [room, location, capacity, status, features];
+            matches = noPrefixWords.every(word =>
+                searchable.some(field => field.includes(word))
+            );
+        }
+
+        row.style.display = matches ? '' : 'none';
     });
 }
 
@@ -67,3 +108,22 @@ document.getElementById("roomSearch")?.addEventListener("keyup", filterRooms);
 document.querySelector(".user-actions img").addEventListener("click", () => window.location.href='profile.html');
 
 window.addEventListener("DOMContentLoaded", filterRooms);
+
+document.querySelectorAll('.search-prefixes button').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const input = document.getElementById('roomSearch');
+        if (!input) return;
+        const prefix = btn.getAttribute('data-prefix');
+        
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+        const value = input.value;
+        input.value = value.slice(0, start) + prefix + value.slice(end);
+        
+        const cursorPos = start + prefix.length;
+        input.setSelectionRange(cursorPos, cursorPos);
+        input.focus();
+        
+        filterRooms();
+    });
+});
