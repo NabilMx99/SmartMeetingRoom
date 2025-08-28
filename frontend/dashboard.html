@@ -23,11 +23,11 @@
         <div class="summary-widgets grid-3">
             <div class="widget">
                 <h3>Today's Meetings<i class="fas fa-users"></i></h3>
-                <p class="widget-number">0</p>
+                <p class="widget-number" id="meetingsCount">0</p> 
             </div>
             <div class="widget">
                 <h3>Available Rooms<i class="fas fa-door-open"></i></h3>
-                <p class="widget-number">0</p>
+                <p class="widget-number" id="availableRoomsCount">0</p> 
             </div>
         </div>
         <div class="grid-2">
@@ -121,44 +121,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Room A</td>
-                                    <td>Building 1 - Floor 3</td>
-                                    <td>10</td>
-                                    <td><span class="badge green">Available</span></td>
-                                    <td>
-                                        <span class="badge grey">Projector</span>
-                                        <span class="badge grey">Whiteboard</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Room B</td>
-                                    <td>Building 2 - Floor 1</td>
-                                    <td>8</td>
-                                    <td><span class="badge red">Occupied</span></td>
-                                    <td><span class="badge grey">Whiteboard</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Room C</td>
-                                    <td>Building 1 - Floor 2</td>
-                                    <td>12</td>
-                                    <td><span class="badge green">Available</span></td>
-                                    <td>
-                                        <span class="badge grey">Video Conferencing</span>
-                                        <span class="badge grey">Projector</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Room D</td>
-                                    <td>Building 2 - Floor 1</td>
-                                    <td>20</td>
-                                    <td><span class="badge red">Occupied</span></td>
-                                    <td>
-                                        <span class="badge grey">Projector</span>
-                                        <span class="badge grey">Whiteboard</span>
-                                        <span class="badge grey">Video Conferencing</span>
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -173,6 +135,7 @@
             </div>
         </div>
     </div>
+    <script src="js/api.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>
