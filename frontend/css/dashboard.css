@@ -380,6 +380,10 @@ body {
     text-align: left;
 }
 
+.room-availability td .badge {
+    margin-right: 4px; 
+}
+
 .room-availability tbody tr:hover {
     background: #f1f7ff;
 }
