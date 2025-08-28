@@ -104,10 +104,98 @@ function filterRooms() {
     });
 }
 
+async function loadRooms() {
+    const tableBody = document.querySelector("#roomTable tbody");
+    if (!tableBody) return;
+
+    try {
+        const rooms = await apiGet("/rooms") || [];
+
+        tableBody.innerHTML = "";
+
+        let availableRoomsCount = 0;
+
+        rooms.forEach(room => {
+            if (room.isAvailable) availableRoomsCount++;
+
+            const tr = document.createElement("tr");
+
+            const tdName = document.createElement("td");
+            tdName.textContent = room.roomName;
+            tr.appendChild(tdName);
+
+            const tdLocation = document.createElement("td");
+            tdLocation.textContent = room.roomLocation;
+            tr.appendChild(tdLocation);
+
+            const tdCapacity = document.createElement("td");
+            tdCapacity.textContent = room.roomCapacity;
+            tr.appendChild(tdCapacity);
+
+            const tdStatus = document.createElement("td");
+            const statusBadge = document.createElement("span");
+            statusBadge.className = `badge ${room.isAvailable ? "green" : "red"}`;
+            statusBadge.textContent = room.isAvailable ? "Available" : "Occupied";
+            tdStatus.appendChild(statusBadge);
+            tr.appendChild(tdStatus);
+
+            const tdFeatures = document.createElement("td");
+            (room.features || []).forEach(feature => {  
+                const badge = document.createElement("span");
+                badge.className = "badge grey";
+                badge.textContent = feature.featureName;  
+                tdFeatures.appendChild(badge);
+            });
+            tr.appendChild(tdFeatures);
+
+            tableBody.appendChild(tr);
+        });
+        
+        document.getElementById("availableRoomsCount").textContent = availableRoomsCount;
+
+        filterRooms();
+    } catch (err) {
+        console.error("Failed to load rooms:", err);
+    }
+}
+
+async function createRoom(roomData) {
+    try {
+        const newRoom = await apiPost("/rooms", roomData);
+        console.log("Room created:", newRoom);
+        await loadRooms(); 
+    } catch (err) {
+        console.error("Failed to create room:", err);
+    }
+}
+
+async function updateRoom(roomId, roomData) {
+    try {
+        await apiPut(`/rooms/${roomId}`, roomData);
+        console.log("Room updated:", roomId);
+        await loadRooms(); 
+    } catch (err) {
+        console.error("Failed to update room:", err);
+    }
+}
+
+async function deleteRoom(roomId) {
+    try {
+        await apiDelete(`/rooms/${roomId}`);
+        console.log("Room deleted:", roomId);
+        await loadRooms(); 
+    } catch (err) {
+        console.error("Failed to delete room:", err);
+    }
+}
+
 document.getElementById("roomSearch")?.addEventListener("keyup", filterRooms);
 document.querySelector(".user-actions img").addEventListener("click", () => window.location.href='profile.html');
 
-window.addEventListener("DOMContentLoaded", filterRooms);
+window.addEventListener("DOMContentLoaded", () => {
+    loadRooms();
+    filterRooms();
+});
 
 document.querySelectorAll('.search-prefixes button').forEach(btn => {
     btn.addEventListener('click', function () {
