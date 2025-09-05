@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -54,12 +55,15 @@ namespace SmartMeetingRoom.API.Controllers
 
             string defaultRoleName = "Guest";
 
-            var role = await _roleManager.FindByNameAsync(defaultRoleName);
+            var role = await _roleManager.Roles
+                .FirstOrDefaultAsync(r => r.NormalizedName == _roleManager.NormalizeKey(defaultRoleName));
+
             if (role == null)
             {
                 var newRole = new ApplicationRole
                 {
-                    Name = defaultRoleName
+                    Name = defaultRoleName,
+                    NormalizedName = _roleManager.NormalizeKey(defaultRoleName)
                 };
                 var roleResult = await _roleManager.CreateAsync(newRole);
                 if (!roleResult.Succeeded)
@@ -181,7 +185,7 @@ namespace SmartMeetingRoom.API.Controllers
                 await _emailService.SendEmailAsync(user.Email!, subject, message);
             }
             catch(Exception ex)
-            { 
+            {
                 Console.WriteLine(ex.Message);
             }
 
@@ -222,6 +226,7 @@ namespace SmartMeetingRoom.API.Controllers
         }
 
         [HttpPost("refresh")]
+        [Authorize]
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto request)
         {
             var refreshToken = await _context.RefreshTokens
@@ -251,6 +256,7 @@ namespace SmartMeetingRoom.API.Controllers
         }
 
         [HttpPost("revoke")]
+        [Authorize]
         public async Task<IActionResult> Revoke([FromBody] RefreshTokenRequestDto request)
         {
             var refreshToken = await _context.RefreshTokens
