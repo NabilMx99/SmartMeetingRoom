@@ -1,52 +1,68 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 using SmartMeetingRoom.API.Data;
-using SmartMeetingRoom.API.Models;
+using SmartMeetingRoom.API.DTOs.Attendee;
 
 namespace SmartMeetingRoom.API.Controllers
 {
     [Route("api/attendees")]
     [ApiController]
+    [Authorize(Policy = "Admin")]
     public class AttendeeController : ControllerBase
     {
         private readonly SmartMeetingRoomDBContext _context;
+        private readonly IMapper _mapper;
 
-        public AttendeeController(SmartMeetingRoomDBContext context)
+        public AttendeeController(SmartMeetingRoomDBContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/attendees
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Attendee>>> GetAttendees()
+        public async Task<ActionResult<IEnumerable<AttendeeDto>>> GetAttendees()
         {
-            return await _context.Attendees.ToListAsync();
+            var attendees = await _context.Attendees
+                .Include(a => a.FkUser)
+                    .ThenInclude(u => u.FkRole)
+                .ToListAsync();
+
+            return Ok(_mapper.Map<IEnumerable<AttendeeDto>>(attendees));
         }
 
         // GET: api/attendees/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Attendee>> GetAttendee(int id)
+        public async Task<ActionResult<AttendeeDto>> GetAttendee(int id)
         {
-            var attendee = await _context.Attendees.FindAsync(id);
+            var attendee = await _context.Attendees
+                .Include(a => a.FkUser)
+                    .ThenInclude(u => u.FkRole)
+                .FirstOrDefaultAsync(a => a.AttendeeId == id);
 
-            if (attendee == null)
-            {
-                return NotFound();
-            }
+            if (attendee == null) return NotFound();
 
-            return attendee;
+            return Ok(_mapper.Map<AttendeeDto>(attendee));
         }
 
         // PUT: api/attendees/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAttendee(int id, Attendee attendee)
+        public async Task<IActionResult> UpdateAttendeeStatus(int id, [FromBody] AttendeeUpdateDto updateDto)
         {
-            if (id != attendee.AttendeeId)
-            {
-                return BadRequest();
-            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            _context.Entry(attendee).State = EntityState.Modified;
+            var attendee = await _context.Attendees
+                .Include(a => a.FkUser)
+                .FirstOrDefaultAsync(a => a.AttendeeId == id);
+
+            if (attendee == null)
+                return NotFound();
+
+            _mapper.Map(updateDto, attendee);
 
             try
             {
@@ -54,48 +70,12 @@ namespace SmartMeetingRoom.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AttendeeExists(id))
-                {
+                if (!await _context.Attendees.AnyAsync(a => a.AttendeeId == id))
                     return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
-        }
-
-        // POST: api/attendees
-        [HttpPost]
-        public async Task<ActionResult<Attendee>> PostAttendee(Attendee attendee)
-        {
-            _context.Attendees.Add(attendee);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetAttendee", new { id = attendee.AttendeeId }, attendee);
-        }
-
-        // DELETE: api/attendees/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAttendee(int id)
-        {
-            var attendee = await _context.Attendees.FindAsync(id);
-            if (attendee == null)
-            {
-                return NotFound();
-            }
-
-            _context.Attendees.Remove(attendee);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool AttendeeExists(int id)
-        {
-            return _context.Attendees.Any(e => e.AttendeeId == id);
         }
     }
 }
