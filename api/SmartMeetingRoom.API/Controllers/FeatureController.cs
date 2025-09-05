@@ -94,11 +94,12 @@ namespace SmartMeetingRoom.API.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> DeleteFeature(byte id)
         {
+            var isUsed = await _context.RoomFeatures.AnyAsync(rf => rf.FkFeatureId == id);
+            if (isUsed)
+                return BadRequest("Feature cannot be deleted because it is assigned to one or more rooms. Remove those associations first.");
+
             var feature = await _context.Features.FindAsync(id);
-            if (feature == null)
-            {
-                return NotFound();
-            }
+            if (feature == null) return NotFound();
 
             _context.Features.Remove(feature);
             await _context.SaveChangesAsync();
