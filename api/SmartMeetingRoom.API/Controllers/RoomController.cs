@@ -82,10 +82,10 @@ namespace SmartMeetingRoom.API.Controllers
                 _context.RoomFeatures.RemoveRange(room.RoomFeatures);
 
                 room.RoomFeatures = roomUpdateDto.FeatureIds
-                    .Select(fid => new RoomFeature 
-                    { 
-                        FkRoomId = id, 
-                        FkFeatureId = fid 
+                    .Select(fid => new RoomFeature
+                    {
+                        FkRoomId = id,
+                        FkFeatureId = fid
                     })
                     .ToList();
             }
@@ -127,10 +127,21 @@ namespace SmartMeetingRoom.API.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> DeleteRoom(int id)
         {
-            var room = await _context.Rooms.FindAsync(id);
-            if (room == null)
+            var room = await _context.Rooms
+                .Include(r => r.RoomFeatures)
+                .Include(r => r.Meetings)
+                .FirstOrDefaultAsync(r => r.RoomId == id);
+
+            if (room == null) return NotFound();
+
+            if (room.Meetings.Any())
             {
-                return NotFound();
+                return BadRequest("Cannot delete room while there are meetings scheduled. Remove or reassign those meetings first.");
+            }
+
+            if (room.RoomFeatures.Any())
+            {
+                _context.RoomFeatures.RemoveRange(room.RoomFeatures);
             }
 
             _context.Rooms.Remove(room);
