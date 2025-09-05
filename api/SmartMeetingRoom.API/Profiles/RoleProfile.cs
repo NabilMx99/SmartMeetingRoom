@@ -16,8 +16,9 @@ public class RoleProfile : Profile
                        opt.MapFrom(src => string.IsNullOrEmpty(src.RoleDescription) ? "No description provided." : src.RoleDescription));
 
         CreateMap<RoleCreateDto, ApplicationRole>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.RoleName))
             .ForMember(dest => dest.RoleDescription, opt =>
-                opt.MapFrom(src => string.IsNullOrEmpty(src.RoleDescription) ? "No description provided." : src.RoleDescription));
+                       opt.MapFrom(src => string.IsNullOrEmpty(src.RoleDescription) ? "No description provided." : src.RoleDescription));
 
         CreateMap<RoleUpdateDto, ApplicationRole>()
             .ForMember(dest => dest.RoleDescription, opt =>
