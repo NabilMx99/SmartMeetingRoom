@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+
 using SmartMeetingRoom.API.DTOs.User;
-using SmartMeetingRoom.API.DTOs.Role;
 using SmartMeetingRoom.API.Models;
 
 namespace SmartMeetingRoom.API.Profiles;
@@ -23,8 +23,6 @@ public class UserProfile : Profile
             .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
             .ForMember(dest => dest.SecurityStamp, opt => opt.Ignore())
             .ForMember(dest => dest.ConcurrencyStamp, opt => opt.Ignore());
-
-        CreateMap<ApplicationRole, RoleDto>();
     }
 }
 
