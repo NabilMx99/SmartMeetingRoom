@@ -66,9 +66,9 @@ namespace SmartMeetingRoom.API.Controllers
                     IsOnline = u.IsOnline,
                     Role = new RoleDto
                     {
-                       RoleId = u.FkRole.Id,
-                       RoleName = u.FkRole.Name!,
-                       RoleDescription = string.IsNullOrEmpty(u.FkRole.RoleDescription) ? "No description provided." : u.FkRole.RoleDescription
+                        RoleId = u.FkRole.Id,
+                        RoleName = u.FkRole.Name!,
+                        RoleDescription = string.IsNullOrEmpty(u.FkRole.RoleDescription) ? "No description provided." : u.FkRole.RoleDescription
                     }
                 }).FirstOrDefaultAsync();
 
@@ -133,14 +133,59 @@ namespace SmartMeetingRoom.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var loggedInUserIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!User.IsInRole("Admin") && loggedInUserIdStr != id.ToString())
+                return Forbid();
+
+            var user = await _context.Users
+                .Include(u => u.Attendees)
+                .Include(u => u.MeetingMinutes)
+                    .ThenInclude(mm => mm.ActionItems)
+                .Include(u => u.ActionItems)
+                .Include(u => u.RefreshTokens)
+                .Include(u => u.Meetings)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
             if (user == null)
                 return NotFound();
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            if (user.Meetings.Any())
+            {
+                return BadRequest("User cannot be deleted while they are organizer of meetings. Reassign or delete those meetings first.");
+            }
 
-            return NoContent();
+            using var tx = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                if (user.Attendees.Any())
+                    _context.Attendees.RemoveRange(user.Attendees);
+
+                if (user.ActionItems.Any())
+                    _context.ActionItems.RemoveRange(user.ActionItems);
+
+                if (user.MeetingMinutes.Any())
+                {
+                    var allActionItemsFromMinutes = user.MeetingMinutes.SelectMany(mm => mm.ActionItems).ToList();
+                    if (allActionItemsFromMinutes.Any())
+                        _context.ActionItems.RemoveRange(allActionItemsFromMinutes);
+
+                    _context.MeetingMinutes.RemoveRange(user.MeetingMinutes);
+                }
+
+                if (user.RefreshTokens.Any())
+                    _context.RefreshTokens.RemoveRange(user.RefreshTokens);
+
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+
+                await tx.CommitAsync();
+                return NoContent();
+            }
+            catch
+            {
+                await tx.RollbackAsync();
+                throw;
+            }
         }
 
         private bool UserExists(int id)
