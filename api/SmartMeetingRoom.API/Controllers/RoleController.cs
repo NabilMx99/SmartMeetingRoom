@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; 
+using Microsoft.EntityFrameworkCore;
 
 using SmartMeetingRoom.API.Data;
 using SmartMeetingRoom.API.DTOs.Role;
@@ -16,11 +17,16 @@ namespace SmartMeetingRoom.API.Controllers
     {
         private readonly SmartMeetingRoomDBContext _context;
         private readonly IMapper _mapper;
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
-        public RoleController(SmartMeetingRoomDBContext context, IMapper mapper)
+        public RoleController(
+            SmartMeetingRoomDBContext context,
+            IMapper mapper,
+            RoleManager<ApplicationRole> roleManager)
         {
             _context = context;
             _mapper = mapper;
+            _roleManager = roleManager;
         }
 
         // GET: api/roles
@@ -45,9 +51,7 @@ namespace SmartMeetingRoom.API.Controllers
         {
             var role = await _context.Roles.FindAsync(id);
             if (role == null)
-            {
                 return NotFound();
-            }
 
             var roleDto = new RoleDto
             {
@@ -68,11 +72,11 @@ namespace SmartMeetingRoom.API.Controllers
 
             var existingRole = await _context.Roles.FindAsync(id);
             if (existingRole == null)
-            {
                 return NotFound();
-            }
 
             _mapper.Map(updatedRoleDto, existingRole);
+
+            existingRole.NormalizedName = _roleManager.NormalizeKey(existingRole.Name!);
 
             try
             {
@@ -81,9 +85,7 @@ namespace SmartMeetingRoom.API.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!RoleExists(id))
-                {
                     return NotFound();
-                }
                 throw;
             }
 
@@ -98,6 +100,8 @@ namespace SmartMeetingRoom.API.Controllers
                 return BadRequest(ModelState);
 
             var role = _mapper.Map<ApplicationRole>(createdRoleDto);
+
+            role.NormalizedName = _roleManager.NormalizeKey(role.Name!);
 
             _context.Roles.Add(role);
             await _context.SaveChangesAsync();
@@ -116,11 +120,15 @@ namespace SmartMeetingRoom.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRole(int id)
         {
-            var role = await _context.Roles.FindAsync(id);
+            var role = await _context.Roles
+               .Include(r => r.Users)
+               .FirstOrDefaultAsync(r => r.Id == id);
+
             if (role == null)
-            {
                 return NotFound();
-            }
+
+            if (role.Users.Any())
+                return BadRequest("Cannot delete role while users are assigned to it. Reassign or remove users first.");
 
             _context.Roles.Remove(role);
             await _context.SaveChangesAsync();
