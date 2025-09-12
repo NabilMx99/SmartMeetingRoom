@@ -46,44 +46,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="next-meeting">
-                                    <td>2025-08-20 10:00 AM</td>
-                                    <td>2025-08-20 11:00 AM</td>
-                                    <td><span class="badge green">Ongoing</span></td>
-                                    <td><button class="view-details-btn" onclick="toggleDetails(this)">View
-                                            Details</button></td>
-                                </tr>
-                                <tr class="meeting-details">
-                                    <td colspan="4">
-                                        <strong>Organizer:</strong> John Doe<br>
-                                        <strong>Start Time:</strong> 2025-08-20 10:00 AM<br>
-                                        <strong>End Time:</strong> 2025-08-20 11:00 AM<br>
-                                        <strong>Title:</strong> Team Sync<br>
-                                        <strong>Agenda:</strong> Discuss project milestones<br>
-                                        <strong>Room:</strong> Room A<br>
-                                        <strong>Location:</strong> Building 1 - Floor 3<br>
-                                        <strong>Status:</strong> Ongoing
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2025-08-20 2:00 PM</td>
-                                    <td>2025-08-20 3:00 PM</td>
-                                    <td><span class="badge blue">Scheduled</span></td>
-                                    <td><button class="view-details-btn" onclick="toggleDetails(this)">View
-                                            Details</button></td>
-                                </tr>
-                                <tr class="meeting-details">
-                                    <td colspan="4">
-                                        <strong>Organizer:</strong> Jane Smith<br>
-                                        <strong>Start Time:</strong> 2025-08-20 2:00 PM<br>
-                                        <strong>End Time:</strong> 2025-08-20 3:00 PM<br>
-                                        <strong>Title:</strong> Project Review<br>
-                                        <strong>Agenda:</strong> Review deliverables and deadlines<br>
-                                        <strong>Room:</strong> Room B<br>
-                                        <strong>Location:</strong> Building 2 - Floor 1<br>
-                                        <strong>Status:</strong> Scheduled
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -95,20 +57,9 @@
                     <button class="join"><i class="fas fa-video"></i>Join Now</button>
                     <button class="minutes"><i class="fas fa-file-alt"></i>View Minutes</button>
                 </div>
-                <!-- Room Availability -->
-                <div class="section room-availability">
-                    <h2 class="section-title"><i class="fas fa-door-open"></i>Room Availability</h2>
-                    <div class="search-bar">
-                        <div class="search-prefixes">
-                            <button type="button" data-prefix="room: ">Room</button>
-                            <button type="button" data-prefix="location: ">Location</button>
-                            <button type="button" data-prefix="capacity: ">Capacity</button>
-                            <button type="button" data-prefix="status: ">Status</button>
-                            <button type="button" data-prefix="features: ">Features</button>
-                        </div>
-                        <input type="text" id="roomSearch"
-                            placeholder="Search rooms by name, location, capacity, status or features...">
-                    </div>
+                <!-- Rooms -->
+                <div class="section rooms">
+                    <h2 class="section-title"><i class="fas fa-door-closed"></i>Rooms</h2>
                     <div class="table-wrapper">
                         <table id="roomTable">
                             <thead>
