@@ -2,73 +2,138 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Smart Meeting Room | Book Meeting</title>
+    <title>Smart Meeting Room | Book a Meeting</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/booking.css">
-    <link rel="icon" type="image/svg+xml" href="images/icons/favicon.svg">
+    <link rel="icon" type="image/svg" href="images/icons/favicon.svg">
 </head>
 <body>
-    <div class="form-card">
-        <h2>Book a Meeting Room</h2>
-        <p class="subtitle">Fill in the details to reserve your room</p>
-
-        <form id="bookingForm">
-            <!-- Meeting Title -->
-            <label for="title">Meeting Title</label>
-            <input type="text" id="title" name="title" placeholder="Project Discussion" required>
-
-            <!-- Date/Time -->
-            <label for="datetime">Date & Time</label>
-            <input type="datetime-local" id="datetime" name="datetime" required>
-
-            <!-- Duration -->
-            <label for="duration">Duration (hours)</label>
-            <input type="number" id="duration" name="duration" min="0.5" step="0.5" required>
-
-            <!-- Attendees -->
-            <label for="attendees">Attendees</label>
-            <input type="text" id="attendees" name="attendees" placeholder="Search or add attendees" required>
-
-            <!-- Room -->
-            <label for="room">Select Room</label>
-            <select id="room" name="room" required>
-                <option value="">-- Select a Room --</option>
-                <option value="Room A">Room A</option>
-                <option value="Room B">Room B</option>
-                <option value="Room C">Room C</option>
-            </select>
-
-            <!-- Room Availability Preview -->
-            <div class="availability-preview">
-                <p><strong>Room Availability:</strong></p>
-                <div class="availability-color green">Available</div>
-                <div class="availability-color red">Booked</div>
-            </div>
-
-            <!-- Options -->
-            <div class="form-check">
-            <input type="checkbox" id="recurring" name="recurring">
-            <label for="recurring">Recurring Meeting</label>
-            </div>
-
-            <div class="form-check">
-            <input type="checkbox" id="video" name="video">
-            <label for="video">Enable Video Conferencing</label>
-            </div>
-
-            <!-- Buttons -->
-            <div class="form-buttons">
-                <button type="submit">Book Now</button>
-                <button type="button" class="cancel" onclick="window.location.href='dashboard.html'">Cancel</button>
-            </div>
-        </form>
+    <!-- Header -->
+    <div class="header-bar">
+        <h1>Book a Meeting</h1>
+        <div class="user-actions">
+            <img src="images/icons/user-profile.jpg" alt="User Profile" style="cursor:pointer;">
+            <button onclick="logout()">Logout</button>
+        </div>
     </div>
+    <!-- Main Container -->
+    <div class="dashboard-container">
+        <div class="booking-grid">
+            <!-- Meeting Booking -->
+            <div class="section booking-form">
+                <h2 class="section-title"><i class="fas fa-calendar-plus"></i>Meeting Booking</h2>
+                <form id="meetingBookingForm">
 
-    <script>
-        document.getElementById('bookingForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Meeting room booked successfully!');
-            window.location.href = 'dashboard.html';
-        });
-    </script>
+                    <div class="form-group">
+                        <label for="meetingDate">Date</label>
+                        <input type="date" id="meetingDate" name="meetingDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="startTime">Start Time</label>
+                        <input type="time" id="startTime" name="startTime" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endTime">End Time</label>
+                        <input type="time" id="endTime" name="endTime" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="meetingTitle">Title</label>
+                        <input type="text" id="meetingTitle" name="meetingTitle" placeholder="Enter meeting title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="agenda">Agenda</label>
+                        <textarea id="agenda" name="agenda" placeholder="Enter meeting agenda" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="attendeeSearch">Attendees</label>
+                        <div id="attendee-search-container">
+                            <div id="selected-attendees"></div>
+                            <input type="text" id="attendeeSearch" name="attendeeSearch" placeholder="Search and add attendees" autocomplete="off">
+                            <div id="attendee-suggestions" class="suggestions-dropdown" style="display:none;"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="roomSelect">Room</label>
+                        <select id="roomSelect" name="roomSelect" required>
+                            <option value="">Select a room</option>
+                        </select>
+                    </div>
+
+                    <div class="form-options">
+                        <label><input type="checkbox" id="recurringMeeting"> Recurring Meeting</label>
+                        <label><input type="checkbox" id="videoConference"> Video Conferencing</label>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="submit" class="schedule"><i class="fas fa-calendar-plus"></i> Book Now</button>
+                        <button type="reset" class="minutes"><i class="fas fa-ban"></i> Cancel</button>
+                    </div>
+                        <div id="booking-error-message" style="color: red; margin-top: 10px; display: none;"></div>
+                </form>
+            </div>
+            <!-- Meeting Info -->
+            <div class="section meeting-info">
+                <h2 class="section-title"><i class="fas fa-info-circle"></i>Meeting Info</h2>
+                <div class="meeting-info-table-wrapper">
+                    <table id="meetingInfoTable">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Room</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="6" style="text-align:center;color:#888;">No meeting(s) booked yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Room Availability -->
+        <div class="section room-availability">
+            <h2 class="section-title"><i class="fas fa-door-open"></i>Room Availability</h2>
+            <div class="search-bar">
+                <div class="search-prefixes">
+                    <button type="button" data-prefix="room: ">Room</button>
+                    <button type="button" data-prefix="location: ">Location</button>
+                    <button type="button" data-prefix="capacity: ">Capacity</button>
+                    <button type="button" data-prefix="status: ">Status</button>
+                    <button type="button" data-prefix="features: ">Features</button>
+                </div>
+                <input type="text" id="roomSearch"
+                    placeholder="Search rooms by name, location, capacity, status or features...">
+            </div>
+            <div class="table-wrapper">
+                <table id="roomTable">
+                    <thead>
+                        <tr>
+                            <th>Room</th>
+                            <th>Location</th>
+                            <th>Capacity</th>
+                            <th>Status</th>
+                            <th>Feature(s)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/booking.js"></script>
 </body>
 </html>
