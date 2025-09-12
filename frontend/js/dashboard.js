@@ -4,25 +4,10 @@ function logout() {
     setTimeout(() => window.location.href = 'login.html', 1000); // Redirect to login page after 1 second delay
 }
 
-(function () {
-    const token = localStorage.getItem('jwtToken');
-    const userJson = localStorage.getItem('user');
-
-    if (!token || !userJson) {
-        window.location.href = 'login.html';
-        return;
-    }
-
-    try {
-        const user = JSON.parse(userJson);
-        const first = user?.firstName || user?.userName || user?.email?.split('@')[0] || '';
-        const el = document.getElementById('welcomeName');
-        if (el) el.textContent = first ? `Welcome, ${first}` : 'Welcome';
-    } catch (err) {
-        console.error('Error parsing user data:', err);
-        window.location.href = 'login.html';
-    }
-})();
+function formatDateTime(dt) {
+    const d = new Date(dt);
+    return d.toLocaleString();
+}
 
 function toggleDetails(button) {
     const detailsRow = button.closest('tr')?.nextElementSibling;
@@ -31,77 +16,6 @@ function toggleDetails(button) {
     detailsRow.classList.toggle('show');
     button.classList.toggle('active');
     button.textContent = detailsRow.classList.contains('show') ? 'Hide Details' : 'View Details';
-}
-
-function filterRooms() {
-    const input = document.getElementById("roomSearch")?.value.toLowerCase().trim() || '';
-    const table = document.getElementById("roomTable");
-    if (!table) return;
-
-    const tbody = table.querySelector("tbody");
-    if (!tbody) return;
-
-    const rows = Array.from(table.querySelectorAll("tbody tr"));
-
-    const regex = /(\w+):\s*([^:]+)(?=\s+\w+:|$)/g;
-    const terms = [];
-    let match;
-    while ((match = regex.exec(input)) !== null) {
-        terms.push({ key: match[1].trim(), value: match[2].trim() });
-    }
-
-    const noPrefixWords = input.replace(regex, '').split(/[\s,]+/).filter(Boolean);
-
-    rows.forEach(row => {
-        const cells = row.querySelectorAll("td");
-        if (cells.length < 5) {
-            row.style.display = '';
-            return;
-        }
-
-        const room = cells[0].textContent.toLowerCase();
-        const location = cells[1].textContent.toLowerCase();
-        const capacity = cells[2].textContent.toLowerCase();
-        const status = cells[3].textContent.toLowerCase();
-        const features = Array.from(cells[4].querySelectorAll('.badge')).map(b => b.textContent.toLowerCase()).join(' ');
-
-        let matches = true;
-        for (const term of terms) {
-            switch (term.key) {
-                case 'room':
-                    if (!room.includes(term.value)) matches = false;
-                    break;
-                case 'location':
-                    if (!location.includes(term.value)) matches = false;
-                    break;
-                case 'capacity':
-                    if (!capacity.includes(term.value)) matches = false;
-                    break;
-                case 'status':
-                    if (!status.includes(term.value)) matches = false;
-                    break;
-                case 'features':
-                case 'feature':
-                    
-                    const featureTerms = term.value.split(/[\s,]+/).filter(Boolean);
-                    if (!featureTerms.every(f => features.includes(f))) matches = false;
-                    break;
-                default:
-                    
-                    break;
-            }
-            if (!matches) break;
-        }
-
-        if (matches && noPrefixWords.length > 0) {
-            const searchable = [room, location, capacity, status, features];
-            matches = noPrefixWords.every(word =>
-                searchable.some(field => field.includes(word))
-            );
-        }
-
-        row.style.display = matches ? '' : 'none';
-    });
 }
 
 async function loadRooms() {
@@ -152,8 +66,6 @@ async function loadRooms() {
         });
         
         document.getElementById("availableRoomsCount").textContent = availableRoomsCount;
-
-        filterRooms();
     } catch (err) {
         console.error("Failed to load rooms:", err);
     }
@@ -189,29 +101,128 @@ async function deleteRoom(roomId) {
     }
 }
 
-document.getElementById("roomSearch")?.addEventListener("keyup", filterRooms);
+async function loadUpcomingMeetings() {
+    const table = document.querySelector('.upcoming-meetings table tbody');
+    if (!table) return;
+    try {
+        const meetings = await apiGet('/meetings') || [];
+        const now = new Date();
+
+        let todaysMeetings = 0;
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        meetings.forEach(m => {
+            if (m.meetingStatus !== 'Cancelled' && m.meetingStatus !== 'Completed') {
+                const start = new Date(m.meetingStartTime);
+                if (start >= today && start < tomorrow) {
+                    todaysMeetings++;
+                }
+            }
+        });
+        document.getElementById('meetingsCount').textContent = todaysMeetings;
+
+        const filtered = meetings.filter(m => {
+            if (m.meetingStatus === 'Cancelled') return false;
+            if (m.meetingStatus === 'Completed') {
+                const end = new Date(m.meetingEndTime);
+                return (now - end) < 24 * 60 * 60 * 1000;
+            }
+            return true;
+        });
+
+        table.innerHTML = '';
+        if (!filtered.length) {
+            table.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;">No upcoming meetings.</td></tr>';
+            return;
+        }
+        filtered.forEach(meeting => {
+
+            const start = new Date(meeting.meetingStartTime);
+            const end = new Date(meeting.meetingEndTime);
+            let status = meeting.meetingStatus;
+            if (status !== 'Cancelled') {
+                if (now >= start && now <= end) status = 'Ongoing';
+                else if (now > end) status = 'Completed';
+                else if (now < start) status = 'Scheduled';
+            }
+            if (status !== meeting.meetingStatus) {
+                apiPut(`/meetings/${meeting.meetingId}`, { meetingStatus: status }).catch(()=>{});
+                meeting.meetingStatus = status;
+            }
+
+            const tr = document.createElement('tr');
+            tr.className = status === 'Ongoing' ? 'next-meeting' : '';
+            tr.innerHTML = `
+                <td>${formatDateTime(meeting.meetingStartTime)}</td>
+                <td>${formatDateTime(meeting.meetingEndTime)}</td>
+                <td><span class="badge ${status === 'Ongoing' ? 'green' : status === 'Cancelled' ? 'red' : status === 'Completed' ? 'grey' : 'blue'}">${status}</span></td>
+                <td><button class="view-details-btn">View Details</button></td>
+            `;
+            table.appendChild(tr);
+
+            const detailsTr = document.createElement('tr');
+            detailsTr.className = 'meeting-details';
+
+            let organizerName = '';
+            if (meeting.organizer) {
+                if (meeting.organizer.firstName && meeting.organizer.lastName) {
+                    organizerName = `${meeting.organizer.firstName} ${meeting.organizer.lastName}`;
+                } else if (meeting.organizer.firstName) {
+                    organizerName = meeting.organizer.firstName;
+                } else if (meeting.organizer.userName) {
+                    organizerName = meeting.organizer.userName;
+                } else if (meeting.organizer.email) {
+                    organizerName = meeting.organizer.email;
+                }
+            }
+            detailsTr.innerHTML = `<td colspan="4">
+                <strong>Organizer:</strong> ${organizerName}<br>
+                <strong>Start Time:</strong> ${formatDateTime(meeting.meetingStartTime)}<br>
+                <strong>End Time:</strong> ${formatDateTime(meeting.meetingEndTime)}<br>
+                <strong>Title:</strong> ${meeting.meetingTitle}<br>
+                <strong>Agenda:</strong> ${meeting.meetingAgenda || ''}<br>
+                <strong>Room:</strong> ${meeting.room?.roomName || ''}<br>
+                <strong>Location:</strong> ${meeting.room?.roomLocation || ''}<br>
+                <strong>Status:</strong> ${status}
+            </td>`;
+            table.appendChild(detailsTr);
+        });
+
+        document.querySelectorAll('.view-details-btn').forEach((btn, idx) => {
+            btn.addEventListener('click', function() {
+                const detailsRow = btn.closest('tr')?.nextElementSibling;
+                if (!detailsRow) return;
+                detailsRow.classList.toggle('show');
+                btn.classList.toggle('active');
+                btn.textContent = detailsRow.classList.contains('show') ? 'Hide Details' : 'View Details';
+            });
+        });
+    } catch (err) {
+        table.innerHTML = `<tr><td colspan="4" style="color:red;">${err.message}</td></tr>`;
+    }
+}
+
 document.querySelector(".user-actions img").addEventListener("click", () => window.location.href='profile.html');
+document.querySelector('.quick-actions .schedule').addEventListener('click', () => window.location.href = 'booking.html');
 
 window.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem('jwtToken');
+    const userJson = localStorage.getItem('user');
+    if (!token || !userJson) {
+        window.location.href = 'login.html';
+        return;
+    }
+    try {
+        const user = JSON.parse(userJson);
+        const first = user?.firstName || user?.userName || user?.email?.split('@')[0] || '';
+        const el = document.getElementById('welcomeName');
+        if (el) el.textContent = first ? `Welcome, ${first}` : 'Welcome';
+    } catch (err) {
+        console.error('Error parsing user data:', err);
+        window.location.href = 'login.html';
+    }
     loadRooms();
-    filterRooms();
-});
-
-document.querySelectorAll('.search-prefixes button').forEach(btn => {
-    btn.addEventListener('click', function () {
-        const input = document.getElementById('roomSearch');
-        if (!input) return;
-        const prefix = btn.getAttribute('data-prefix');
-        
-        const start = input.selectionStart;
-        const end = input.selectionEnd;
-        const value = input.value;
-        input.value = value.slice(0, start) + prefix + value.slice(end);
-        
-        const cursorPos = start + prefix.length;
-        input.setSelectionRange(cursorPos, cursorPos);
-        input.focus();
-        
-        filterRooms();
-    });
+    loadUpcomingMeetings();
 });
