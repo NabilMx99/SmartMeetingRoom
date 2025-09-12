@@ -86,6 +86,45 @@ namespace SmartMeetingRoom.API.Controllers
             return Ok(user);
         }
 
+        // GET: api/users/search?term=...
+        [HttpGet("search")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<UserDto>>> SearchUsers([FromQuery] string term)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+                return Ok(new List<UserDto>());
+
+            var lowered = term.Trim().ToLower();
+
+            var users = await _context.Users
+                .Include(u => u.FkRole)
+                .Where(u =>
+                    u.FirstName.ToLower().Contains(lowered) ||
+                    u.LastName.ToLower().Contains(lowered) ||
+                    (u.FirstName + " " + u.LastName).ToLower().Contains(lowered) ||
+                    u.Email!.ToLower().Contains(lowered)
+                )
+                .Select(u => new UserDto
+                {
+                    UserId = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    PhoneNumber = u.PhoneNumber!,
+                    Email = u.Email!,
+                    IsOnline = u.IsOnline,
+                    Role = new RoleDto
+                    {
+                        RoleId = u.FkRole.Id,
+                        RoleName = u.FkRole.Name!,
+                        RoleDescription = string.IsNullOrEmpty(u.FkRole.RoleDescription) ? "No description provided." : u.FkRole.RoleDescription
+                    }
+                })
+                .Take(10)
+                .ToListAsync();
+
+            return Ok(users);
+        }
+
         // PUT: api/users/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, [FromBody] UserProfileDto userProfileDto)
