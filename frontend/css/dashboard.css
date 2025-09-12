@@ -347,8 +347,8 @@ body {
     max-height: 500px;
 }
 
-/* Room Availability */
-.room-availability {
+/* Rooms Section */
+.rooms {
     background: #fff;
     padding: 20px;
     margin-bottom: 20px;
@@ -356,14 +356,14 @@ body {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.room-availability .table-wrapper {
+.rooms .table-wrapper {
     max-height: 300px;
     overflow-x: auto;
     overflow-y: auto;
     display: block;
 }
 
-.room-availability table {
+.rooms table {
     border-collapse: separate;
     border-spacing: 0;
     border-radius: 8px;
@@ -371,8 +371,8 @@ body {
     min-width: 100%;          
 }
 
-.room-availability th,
-.room-availability td {
+.rooms th,
+.rooms td {
     white-space: normal;
     word-break: break-word;
     padding: 10px 12px;
@@ -380,63 +380,14 @@ body {
     text-align: left;
 }
 
-.room-availability td .badge {
+.rooms td .badge {
     margin-right: 4px; 
 }
 
-.room-availability tbody tr:hover {
+.rooms tbody tr:hover {
     background: #f1f7ff;
 }
 
 .grid-2 > div:first-child {
     min-width: 0;               
-}
-
-/* Search Bar */
-.search-bar {
-    margin-bottom: 15px;
-}
-
-.search-bar input {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    outline: none;
-    font-size: 0.9em;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    background-color: #fff;
-    box-sizing: border-box;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.search-bar input::placeholder {
-    color: #999;
-    font-style: italic;
-}
-
-.search-bar input:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
-}
-
-.search-prefixes {
-    margin-bottom: 8px;
-    display: flex;
-    gap: 8px;
-}
-
-.search-prefixes button {
-    background: #2563eb;
-    color: #fff;
-    border: none;
-    border-radius: 16px;
-    padding: 4px 14px;
-    font-size: 0.9em;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.search-prefixes button:hover {
-    background: #1e3a8a;
 }
