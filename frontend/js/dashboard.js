@@ -206,6 +206,25 @@ async function loadUpcomingMeetings() {
 
 document.querySelector(".user-actions img").addEventListener("click", () => window.location.href='profile.html');
 document.querySelector('.quick-actions .schedule').addEventListener('click', () => window.location.href = 'booking.html');
+document.querySelector('.quick-actions .join').addEventListener('click', async () => {
+    try {
+        const meetings = await apiGet('/meetings') || [];
+        const now = new Date();
+        const upcoming = meetings.filter(m => {
+            if (m.meetingStatus === 'Cancelled' || m.meetingStatus === 'Completed') return false;
+            const start = new Date(m.meetingStartTime);
+            const end = new Date(m.meetingEndTime);
+            return now <= end;
+        });
+        if (upcoming.length) {
+            window.location.href = 'join-meeting.html';
+        } else {
+            alert('There are no upcoming meetings to join.');
+        }
+    } catch (err) {
+        alert('Failed to check meetings.');
+    }
+});
 
 window.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem('jwtToken');
