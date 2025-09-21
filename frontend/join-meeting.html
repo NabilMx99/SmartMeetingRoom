@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Meeting Room | Join a Meeting</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/join-meeting.css">
+    <link rel="icon" type="image/svg" href="images/icons/favicon.svg">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header-bar">
+        <h1>Join a Meeting</h1>
+        <div class="user-actions">
+            <!-- User Profile Logo -->
+            <img src="images/icons/user-profile.jpg" alt="User Profile" style="cursor:pointer;">
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+    <!-- Meetings List Section -->
+    <div class="join-meeting-container">
+        <div id="meetingsList">
+        </div>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/join-meeting.js"></script>
+</body>
+</html>
