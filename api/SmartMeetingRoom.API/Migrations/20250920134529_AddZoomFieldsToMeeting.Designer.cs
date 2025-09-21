@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartMeetingRoom.API.Data;
 
@@ -11,9 +12,11 @@ using SmartMeetingRoom.API.Data;
 namespace SmartMeetingRoom.API.Migrations
 {
     [DbContext(typeof(SmartMeetingRoomDBContext))]
-    partial class SmartMeetingRoomDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250920134529_AddZoomFieldsToMeeting")]
+    partial class AddZoomFieldsToMeeting
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

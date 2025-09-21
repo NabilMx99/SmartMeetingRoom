@@ -7,6 +7,10 @@ public partial class Meeting
 {
     public int MeetingId { get; set; }
 
+    public long? ZoomMeetingId { get; set; }
+
+    public string? ZoomJoinUrl { get; set; }
+
     public int FkUserId { get; set; }
 
     public int FkRoomId { get; set; }
