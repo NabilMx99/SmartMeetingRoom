@@ -7,6 +7,7 @@ using System.Security.Claims;
 using SmartMeetingRoom.API.Data;
 using SmartMeetingRoom.API.DTOs.Meeting;
 using SmartMeetingRoom.API.Models;
+using SmartMeetingRoom.API.Services;
 
 namespace SmartMeetingRoom.API.Controllers
 {
@@ -17,11 +18,13 @@ namespace SmartMeetingRoom.API.Controllers
     {
         private readonly SmartMeetingRoomDBContext _context;
         private readonly IMapper _mapper;
+        private readonly IZoomService _zoomService;
 
-        public MeetingController(SmartMeetingRoomDBContext context, IMapper mapper)
+        public MeetingController(SmartMeetingRoomDBContext context, IMapper mapper, IZoomService zoomService)
         {
             _context = context;
             _mapper = mapper;
+            _zoomService = zoomService;
         }
 
         // GET: api/meetings
@@ -50,6 +53,25 @@ namespace SmartMeetingRoom.API.Controllers
             if (meeting == null) return NotFound();
 
             return Ok(_mapper.Map<MeetingDto>(meeting));
+        }
+
+        // GET: api/meetings/zoom/{zoomMeetingId}
+        [HttpGet("zoom/{zoomMeetingId}")]
+        public async Task<IActionResult> GetZoomMeeting(long zoomMeetingId)
+        {
+            try
+            {
+                var zoomMeeting = await _zoomService.GetMeetingAsync(zoomMeetingId);
+                return Ok(zoomMeeting);
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCode(500, $"Error contacting Zoom API: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Unexpected error: {ex.Message}");
+            }
         }
 
         // POST: api/meetings
@@ -108,6 +130,23 @@ namespace SmartMeetingRoom.API.Controllers
                         AttendeeStatus = "Invited"
                     });
                 }
+            }
+
+            try
+            {
+                var zoomMeeting = await _zoomService.CreateMeetingAsync(
+                    meeting.MeetingTitle,
+                    meeting.MeetingAgenda,
+                    meeting.MeetingStartTime,
+                    meeting.MeetingEndTime
+                );
+
+                meeting.ZoomMeetingId = zoomMeeting.GetProperty("id").GetInt64();
+                meeting.ZoomJoinUrl = zoomMeeting.GetProperty("join_url").GetString();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Zoom meeting creation failed: {ex.Message}");
             }
 
             _context.Meetings.Add(meeting);
@@ -216,6 +255,17 @@ namespace SmartMeetingRoom.API.Controllers
 
                 _context.Meetings.Remove(meeting);
                 await _context.SaveChangesAsync();
+
+                if (meeting.ZoomMeetingId.HasValue)
+                {
+                    try
+                    {
+                        await _zoomService.DeleteMeetingAsync(meeting.ZoomMeetingId.Value);
+                    }
+                    catch
+                    {
+                    }
+                }
 
                 await tx.CommitAsync();
                 return NoContent();
