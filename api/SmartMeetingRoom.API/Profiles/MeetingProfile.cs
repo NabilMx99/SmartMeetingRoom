@@ -11,6 +11,7 @@ namespace SmartMeetingRoom.API.Profiles
         {
             CreateMap<Meeting, MeetingDto>()
                 .ForMember(dest => dest.MeetingId, opt => opt.MapFrom(src => src.MeetingId))
+                .ForMember(dest => dest.ZoomMeetingId, opt => opt.MapFrom(src => src.ZoomMeetingId))
                 .ForMember(dest => dest.Organizer, opt => opt.MapFrom(src => src.FkUser))
                 .ForMember(dest => dest.Room, opt => opt.MapFrom(src => src.FkRoom))
                 .ForMember(dest => dest.Attendees, opt => opt.MapFrom(src => src.Attendees))
@@ -18,7 +19,8 @@ namespace SmartMeetingRoom.API.Profiles
                 .ForMember(dest => dest.MeetingEndTime, opt => opt.MapFrom(src => src.MeetingEndTime))
                 .ForMember(dest => dest.MeetingTitle, opt => opt.MapFrom(src => src.MeetingTitle))
                 .ForMember(dest => dest.MeetingAgenda, opt => opt.MapFrom(src => src.MeetingAgenda))
-                .ForMember(dest => dest.MeetingStatus, opt => opt.MapFrom(src => src.MeetingStatus));
+                .ForMember(dest => dest.MeetingStatus, opt => opt.MapFrom(src => src.MeetingStatus))
+                .ForMember(dest => dest.ZoomJoinUrl, opt => opt.MapFrom(src => src.ZoomJoinUrl));
 
             CreateMap<MeetingCreateDto, Meeting>()
                 .ForMember(dest => dest.MeetingId, opt => opt.Ignore())
