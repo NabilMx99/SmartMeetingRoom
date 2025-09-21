@@ -8,6 +8,8 @@ public class MeetingDto
 {
     public int MeetingId { get; set; }
 
+    public long? ZoomMeetingId { get; set; }
+
     public UserDto Organizer { get; set; } = null!;
 
     public RoomDto Room { get; set; } = null!;
@@ -21,6 +23,8 @@ public class MeetingDto
     public string? MeetingAgenda { get; set; }
 
     public string MeetingStatus { get; set; } = null!;
+
+    public string? ZoomJoinUrl { get; set; }
 
     public ICollection<AttendeeDto> Attendees { get; set; } = new List<AttendeeDto>();
 }
