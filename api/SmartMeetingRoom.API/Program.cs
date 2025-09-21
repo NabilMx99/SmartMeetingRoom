@@ -74,6 +74,9 @@ namespace SmartMeetingRoom.API
             // Add AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+            // Add Zoom service
+            builder.Services.AddHttpClient<IZoomService, ZoomService>();
+
             // Add Controllers
             builder.Services.AddControllers();
 
