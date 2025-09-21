@@ -6,5 +6,6 @@ CREATE TABLE RoomFeature(
     FK_FeatureId TINYINT NOT NULL,
     PRIMARY KEY(RoomFeatureId),
     FOREIGN KEY(FK_RoomId) REFERENCES Room(RoomId),
-    FOREIGN KEY(FK_FeatureId) REFERENCES Feature(FeatureId)
+    FOREIGN KEY(FK_FeatureId) REFERENCES Feature(FeatureId),
+    CONSTRAINT UQ_RoomFeature UNIQUE(FK_RoomId, FK_FeatureId)
 );
